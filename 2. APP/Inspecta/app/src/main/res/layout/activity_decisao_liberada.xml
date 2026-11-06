@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F8F9FA">
+
+    <!-- Toolbar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:background="#FFFFFF"
+        android:elevation="4dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Decisão registada"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#111111"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Decisão: retirar status"
+            android:textSize="12sp"
+            android:textColor="#888888"/>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp"
+            android:gravity="center_horizontal">
+
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:src="@android:drawable/checkbox_on_background"
+                android:layout_marginBottom="16dp"
+                android:layout_marginTop="16dp"
+                app:tint="#2E7D32" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Máquina liberada\npara operação."
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:textColor="#111111"
+                android:gravity="center"
+                android:layout_marginBottom="12dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="O status inoperante foi retirado da PH-07 após a correção e o reteste da falha."
+                android:textSize="16sp"
+                android:textColor="#555555"
+                android:gravity="center"
+                android:layout_marginBottom="32dp"/>
+
+            <!-- Card Máquina Operante -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardBackgroundColor="#E8F5E9"
+                app:cardElevation="0dp"
+                android:layout_marginBottom="24dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Operante • liberada às 07:42"
+                        android:textColor="#2E7D32"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp"/>
+
+                    <TextView android:text="PH-07" android:textStyle="bold" android:textColor="#111111" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                    <TextView android:text="Prensa hidráulica" android:textStyle="bold" android:textSize="18sp" android:textColor="#111111" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                    <TextView android:text="Estamparia - Linha 02" android:textColor="#555555" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Card Comprovativo Liberacao -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="1dp"
+                app:cardBackgroundColor="#FFFFFF"
+                android:layout_marginBottom="24dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Comprovante da liberação"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        android:layout_marginBottom="16dp"/>
+
+                    <TextView android:text="Ocorrência: #CK-0611-042" android:layout_marginBottom="8dp" android:textColor="#555555" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                    <TextView android:text="Liberado por: Marina Costa • Supervisora" android:layout_marginBottom="8dp" android:textColor="#555555" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                    <TextView android:text="Data e hora: 06 nov 2026 - 07:42" android:layout_marginBottom="16dp" android:textColor="#555555" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#EEEEEE" android:layout_marginBottom="16dp"/>
+
+                    <TextView android:text="Correção verificada" android:textColor="#888888" android:textSize="12sp" android:layout_marginBottom="4dp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                    <TextView android:text="Contato do botão de emergência substituído pela manutenção (OS 2187). Reteste funcional aprovado às 07:40." android:textColor="#111111" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Alerta Notificação -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#E0F7FA"
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:layout_marginBottom="32dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rafael Lima foi notificado"
+                    android:textStyle="bold"
+                    android:textColor="#006064"
+                    android:layout_marginBottom="4dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="A máquina aparecerá como operante. A inspeção original e esta liberação permanecem no histórico."
+                    android:textColor="#006064"/>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnVerHistorico"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Ver histórico da máquina"
+                android:backgroundTint="#FFFFFF"
+                android:textColor="#111111"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Botão -->
+            <Button
+                android:id="@+id/btnVoltarInicioLiberada"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="⌂ Voltar ao início"
+                android:textSize="16sp"
+                android:backgroundTint="#004D40"
+                android:textColor="#FFFFFF" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

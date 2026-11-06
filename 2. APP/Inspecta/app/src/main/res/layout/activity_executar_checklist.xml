@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F8F9FA">
+
+    <!-- Toolbar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:background="#FFFFFF"
+        android:elevation="4dp">
+
+        <ImageView
+            android:id="@+id/btnVoltar"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@android:drawable/ic_menu_revert" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:text="Executar checklist"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#111111"/>
+    </LinearLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <!-- Progresso com margem inferior -->
+            <TextView
+                android:id="@+id/tvProgresso"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="3 de 3 itens respondidos"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textColor="#111111"
+                android:layout_marginBottom="24dp"/>
+
+            <!-- Lista de Perguntas -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvPerguntas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:layout_marginBottom="32dp"/>
+
+            <!-- Área de Status -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Status da máquina"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:textColor="#111111"
+                android:layout_marginBottom="16dp"/>
+
+            <!-- Margem aplicada ao grupo de botões -->
+            <RadioGroup
+                android:id="@+id/rgStatusMaquina"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="24dp">
+
+                <RadioButton
+                    android:id="@+id/rbOperante"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="56dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="Operante" />
+
+                <RadioButton
+                    android:id="@+id/rbInoperante"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="56dp"
+                    android:layout_marginStart="8dp"
+                    android:text="Inoperante"
+                    android:textColor="#B71C1C" />
+            </RadioGroup>
+
+            <!-- Campo de descrição com margens em cima e embaixo -->
+            <EditText
+                android:id="@+id/etDescricaoFalha"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minLines="4"
+                android:gravity="top|start"
+                android:hint="Descreva a falha *"
+                android:background="@android:drawable/edit_text"
+                android:padding="16dp"
+                android:layout_marginBottom="32dp"/>
+
+            <Button
+                android:id="@+id/btnConcluir"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="Concluir e sinalizar inoperante"
+                android:textSize="16sp"
+                android:backgroundTint="#004D40"
+                android:textColor="#FFFFFF" />
+
+            <!-- Texto de aviso abaixo do botão -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="O supervisor receberá sua inspeção e o alerta da máquina."
+                android:textAlignment="center"
+                android:textSize="12sp"
+                android:textColor="#888888"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"/>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</LinearLayout>
