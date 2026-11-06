@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F8F9FA">
+
+    <!-- Toolbar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="24dp"
+        android:background="#FFFFFF"
+        android:elevation="4dp">
+        <ImageView
+            android:id="@+id/btnVoltar"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@android:drawable/ic_menu_revert" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="24dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Retirar status inoperante"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#111111"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PH-07 • Confirmação de segurança"
+                android:textSize="12sp"
+                android:textColor="#888888"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="A falha foi corrigida?\nConfirme antes de liberar."
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#111111"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Esta ação retira o status inoperante e permite que a PH-07 volte à operação."
+                android:textSize="14sp"
+                android:textColor="#555555"
+                android:layout_marginBottom="24dp"/>
+
+            <TextView android:text="PH-07" android:textStyle="bold" android:textColor="#111111" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            <TextView android:text="Prensa hidráulica" android:textStyle="bold" android:textSize="18sp" android:textColor="#111111" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            <TextView android:text="Estamparia - Linha 02" android:textColor="#555555" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginBottom="24dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Justificativa da liberação *"
+                android:textColor="#555555"
+                android:layout_marginBottom="8dp"/>
+
+            <EditText
+                android:id="@+id/etJustificativaLiberacao"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minLines="3"
+                android:gravity="top|start"
+                android:text="Contato do botão de emergência substituído pela manutenção (OS 2187). Reteste funcional aprovado às 07:40."
+                android:background="@drawable/bg_search"
+                android:padding="16dp"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="A justificativa ficará no histórico da máquina."
+                android:textSize="12sp"
+                android:textColor="#888888"
+                android:layout_marginBottom="24dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Confirmações obrigatórias"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textColor="#111111"
+                android:layout_marginBottom="12dp"/>
+
+            <CheckBox
+                android:id="@+id/cbCorrecaoReteste"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Correção e reteste verificados\nConfirmei que o botão de emergência interrompe o ciclo imediatamente."
+                android:layout_marginBottom="16dp"/>
+
+            <CheckBox
+                android:id="@+id/cbMaquinaSegura"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Máquina segura para operar\nVerifiquei as proteções e a retirada da sinalização de impedimento."
+                android:layout_marginBottom="24dp"/>
+
+            <!-- Alerta Registo Preservado -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFF9C4"
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_marginBottom="24dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="O registro original será preservado"
+                    android:textStyle="bold"
+                    android:textColor="#F57F17"
+                    android:layout_marginBottom="4dp"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="A falha das 06:12 não será apagada. A liberação terá data, justificativa e sua identificação."
+                    android:textColor="#F57F17"
+                    android:textSize="12sp"/>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Liberação por Marina Costa • Supervisora"
+                android:textAlignment="center"
+                android:textColor="#888888"
+                android:layout_marginBottom="16dp"/>
+
+            <Button
+                android:id="@+id/btnConfirmarLiberacao"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="Confirmar liberação da máquina"
+                android:textSize="16sp"
+                android:backgroundTint="#004D40"
+                android:textColor="#FFFFFF"
+                android:layout_marginBottom="12dp" />
+
+            <Button
+                android:id="@+id/btnCancelarManter"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="Cancelar e manter inoperante"
+                android:textSize="16sp"
+                android:backgroundTint="#FFFFFF"
+                android:textColor="#111111"
+                style="?android:attr/borderlessButtonStyle" />
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

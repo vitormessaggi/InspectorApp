@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="16dp"
+    android:layout_marginStart="4dp"
+    android:layout_marginEnd="4dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="1dp"
+    app:cardBackgroundColor="#FFFFFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:id="@+id/tvTituloPergunta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_toStartOf="@+id/tvTagCritico"
+                android:layout_marginEnd="16dp"
+                android:text="Botão de emergência"
+                android:textStyle="bold"
+                android:textColor="#111111"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/tvTagCritico"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:background="#FFEBEE"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="6dp"
+                android:text="Crítico"
+                android:textColor="#B71C1C"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/tvDescricaoPergunta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ao acionar, a máquina para imediatamente?"
+            android:textColor="#555555"
+            android:textSize="16sp"
+            android:layout_marginBottom="20dp" />
+
+        <RadioGroup
+            android:id="@+id/rgResposta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rbConforme"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="56dp"
+                android:text="Conforme"
+                android:background="@drawable/bg_radio_button"
+                android:button="@null"
+                android:gravity="center"
+                android:textColor="#2E7D32"
+                android:textStyle="bold"
+                android:layout_marginEnd="8dp"/>
+
+            <RadioButton
+                android:id="@+id/rbNaoConforme"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="56dp"
+                android:text="Não conforme"
+                android:background="@drawable/bg_radio_button"
+                android:button="@null"
+                android:gravity="center"
+                android:textColor="#C62828"
+                android:textStyle="bold"
+                android:layout_marginStart="8dp"/>
+        </RadioGroup>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
