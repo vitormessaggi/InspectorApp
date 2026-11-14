@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "149457437524",
+    "project_id": "inspecta-70285",
+    "storage_bucket": "inspecta-70285.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:149457437524:android:b481bb08daf4eb2825fec1",
+        "android_client_info": {
+          "package_name": "com.example.inspecta"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrC3MMweMGinJwMb5yM8r30iKxXiaxlUc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
