@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Inspecta</string>
+    <string name="saudacao">Bom dia.</string>
+    <string name="saudacao_com_nome">Bom dia, %1$s.</string>
 </resources>

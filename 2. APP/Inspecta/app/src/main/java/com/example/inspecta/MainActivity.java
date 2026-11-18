@@ -1,5 +1,6 @@
 package com.example.inspecta;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Button;
@@ -15,9 +16,12 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity {
+    static final String EXTRA_NOME_USUARIO = "com.example.inspecta.extra.NOME_USUARIO";
+
     private FirebaseAuth firebaseAuth;
     private EditText emailField;
     private EditText passwordField;
@@ -99,7 +103,8 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     }
 
-                    Object tagValue = task.getResult().get("tag");
+                    DocumentSnapshot profile = task.getResult();
+                    Object tagValue = profile.get("tag");
                     String tag = tagValue == null ? "" : tagValue.toString().trim();
                     Class<?> destination;
                     if ("Operador".equalsIgnoreCase(tag)) {
@@ -113,7 +118,12 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     }
 
-                    startActivity(new android.content.Intent(this, destination));
+                    Intent intent = new Intent(this, destination);
+                    Object nome = profile.get("nome");
+                    if (nome instanceof String) {
+                        intent.putExtra(EXTRA_NOME_USUARIO, ((String) nome).trim());
+                    }
+                    startActivity(intent);
                     finish();
                 });
     }

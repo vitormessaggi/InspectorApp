@@ -18,9 +18,10 @@
         android:layout_marginBottom="8dp" />
 
     <TextView
+        android:id="@+id/tvSaudacao"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Bom dia, Rafael."
+        android:text="@string/saudacao"
         android:textSize="26sp"
         android:textStyle="bold"
         android:textColor="#111111"
