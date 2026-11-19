@@ -1,0 +1,172 @@
+// Incorpore este trecho dentro de match /databases/{database}/documents.
+// Se o trecho anterior do Inspecta já estiver publicado, substitua-o por este.
+// Preserve as regras dos perfis e mantenha o campo users/{uid}.tag sob controle administrativo.
+// Regras mais amplas precisam excluir /checklists, /inspecoes e /bloqueiosMaquinas.
+function perfilInspecta() {
+  return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+}
+
+function supervisorInspecta() {
+  return request.auth != null && perfilInspecta().tag is string
+    && perfilInspecta().tag.matches('(?i)^\\s*supervisor\\s*$');
+}
+
+function operadorInspecta() {
+  return request.auth != null && perfilInspecta().tag is string
+    && perfilInspecta().tag.matches('(?i)^\\s*operador\\s*$');
+}
+
+function bloqueioInspecta(codigo) {
+  let id = 'maq-' + codigo.trim().upper().replace('%', '%25').replace('/', '%2F');
+  return /databases/$(database)/documents/bloqueiosMaquinas/$(id);
+}
+
+match /checklists/{checklistId} {
+  function checklistValido() {
+    let dados = request.resource.data;
+    return dados.keys().hasOnly([
+        'nome', 'codigoMaquina', 'nomeMaquina', 'setor', 'itens',
+        'publicado', 'criadoPor', 'atualizadoEm', 'indicesCriticos', 'versaoAnteriorId'
+      ])
+      && dados.nome is string && dados.nome.size() > 0
+      && dados.codigoMaquina is string && dados.nomeMaquina is string
+      && dados.setor is string && dados.itens is list && dados.publicado is bool
+      && dados.get('indicesCriticos', []) is list
+      && dados.criadoPor is string && dados.atualizadoEm == request.time
+      && (!dados.publicado || (dados.codigoMaquina.size() > 0
+        && dados.nomeMaquina.size() > 0 && dados.itens.size() > 0));
+  }
+
+  function versaoArquivada(id) {
+    let caminho = /databases/$(database)/documents/checklists/$(checklistId)/versoes/$(id);
+    return !exists(caminho) && getAfter(caminho).data == resource.data;
+  }
+
+  function edicaoValida() {
+    let dados = request.resource.data;
+    return checklistValido() && dados.criadoPor == resource.data.criadoPor
+      && (resource.data.publicado == false
+        ? !dados.keys().hasAny(['versaoAnteriorId'])
+        : dados.publicado == true && dados.codigoMaquina == resource.data.codigoMaquina
+          && dados.versaoAnteriorId is string && versaoArquivada(dados.versaoAnteriorId));
+  }
+
+  function exclusaoValida() {
+    let dados = request.resource.data;
+    return dados.diff(resource.data).affectedKeys().hasOnly(['publicado', 'excluidoEm', 'excluidoPor'])
+      && dados.publicado == false && dados.excluidoEm == request.time
+      && dados.excluidoPor == request.auth.uid;
+  }
+
+  allow read: if supervisorInspecta() || (operadorInspecta() && resource.data.publicado == true);
+
+  allow create: if supervisorInspecta() && checklistValido()
+    && !request.resource.data.keys().hasAny(['versaoAnteriorId'])
+    && request.resource.data.criadoPor == request.auth.uid;
+
+  allow update: if supervisorInspecta() && !resource.data.keys().hasAny(['excluidoEm'])
+    && (exclusaoValida() || edicaoValida());
+
+  match /versoes/{versaoId} {
+    function copiaDaVersaoAnterior() {
+      let caminho = /databases/$(database)/documents/checklists/$(checklistId);
+      let anterior = get(caminho).data;
+      let atual = getAfter(caminho).data;
+      return anterior.publicado == true && request.resource.data == anterior
+        && atual.versaoAnteriorId == versaoId && atual.atualizadoEm == request.time;
+    }
+
+    allow read: if supervisorInspecta();
+    allow create: if supervisorInspecta() && copiaDaVersaoAnterior();
+  }
+}
+
+match /inspecoes/{inspecaoId} {
+  function checklistEnviado(dados) {
+    return get(/databases/$(database)/documents/checklists/$(dados.checklistId)).data;
+  }
+
+  function falhasConferem(dados, checklist) {
+    let falhas = dados.falhas.toSet();
+    let criticas = dados.falhasCriticas.toSet();
+    let indicesCriticos = checklist.get('indicesCriticos', null);
+    return dados.falhas.size() == falhas.size() && falhas.size() <= checklist.itens.size()
+      && dados.falhasCriticas.size() == criticas.size() && falhas.hasAll(criticas)
+      && (indicesCriticos == null || falhas.intersection(indicesCriticos.toSet()) == criticas)
+      && dados.pendente == (criticas.size() > 0)
+      && dados.perguntasCriticas.size() == criticas.size()
+      && (!dados.pendente || (checklist.itens[dados.falhasCriticas[0]].critico == true
+        && dados.perguntasCriticas[0] == checklist.itens[dados.falhasCriticas[0]].pergunta));
+  }
+
+  function bloqueioConfere(dados) {
+    let caminho = bloqueioInspecta(dados.codigoMaquina);
+    return !exists(caminho) && (dados.pendente
+      ? getAfter(caminho).data.inspecaoId == inspecaoId
+      : !existsAfter(caminho));
+  }
+
+  function inspecaoValida(dados) {
+    let checklist = checklistEnviado(dados);
+    let nome = perfilInspecta().get('nome', '');
+    return dados.keys().hasOnly([
+        'checklistId', 'checklistAtualizadoEm', 'checklistNome', 'codigoMaquina', 'nomeMaquina', 'setor',
+        'operadorUid', 'operadorNome', 'observacao', 'falhas', 'falhasCriticas',
+        'perguntasCriticas', 'pendente', 'enviadaEm'
+      ])
+      && checklist.publicado == true
+      && dados.get('checklistAtualizadoEm', checklist.get('atualizadoEm', null)) == checklist.get('atualizadoEm', null)
+      && dados.checklistNome == checklist.nome && dados.codigoMaquina == checklist.codigoMaquina
+      && dados.nomeMaquina == checklist.nomeMaquina && dados.setor == checklist.setor
+      && dados.operadorUid == request.auth.uid && dados.operadorNome == (nome is string ? nome : '')
+      && dados.observacao is string && dados.observacao.size() <= 2000
+      && dados.falhas is list && dados.falhasCriticas is list && dados.perguntasCriticas is list
+      && dados.enviadaEm == request.time
+      && falhasConferem(dados, checklist) && bloqueioConfere(dados);
+  }
+
+  function liberacaoValida(dados) {
+    let caminho = bloqueioInspecta(resource.data.codigoMaquina);
+    return resource.data.pendente == true && dados.pendente == false
+      && dados.diff(resource.data).affectedKeys().hasOnly([
+        'pendente', 'liberadoPor', 'liberadaEm', 'justificativaLiberacao',
+        'correcaoVerificada', 'segurancaVerificada'
+      ])
+      && dados.liberadoPor == request.auth.uid && dados.liberadaEm == request.time
+      && dados.correcaoVerificada == true && dados.segurancaVerificada == true
+      && dados.justificativaLiberacao is string && dados.justificativaLiberacao.trim().size() > 0
+      && dados.justificativaLiberacao.size() <= 2000
+      && get(caminho).data.inspecaoId == inspecaoId && !existsAfter(caminho);
+  }
+
+  allow get: if supervisorInspecta()
+    || (operadorInspecta() && (resource == null || resource.data.operadorUid == request.auth.uid));
+  allow list: if supervisorInspecta();
+  allow create: if operadorInspecta() && inspecaoValida(request.resource.data);
+  allow update: if supervisorInspecta() && liberacaoValida(request.resource.data);
+}
+
+match /bloqueiosMaquinas/{maquinaId} {
+  function caminhoInspecao(id) {
+    return /databases/$(database)/documents/inspecoes/$(id);
+  }
+
+  function aberturaValida(caminho) {
+    let registro = getAfter(caminho).data;
+    return !exists(caminho) && registro.pendente == true && registro.enviadaEm == request.time
+      && registro.operadorUid == request.auth.uid
+      && bloqueioInspecta(registro.codigoMaquina)
+        == /databases/$(database)/documents/bloqueiosMaquinas/$(maquinaId);
+  }
+
+  function encerramentoValido(caminho) {
+    let registro = getAfter(caminho).data;
+    return get(caminho).data.pendente == true && registro.pendente == false
+      && registro.liberadaEm == request.time && registro.liberadoPor == request.auth.uid;
+  }
+
+  allow read: if supervisorInspecta() || operadorInspecta();
+  allow create: if operadorInspecta() && request.resource.data.keys().hasOnly(['inspecaoId'])
+    && aberturaValida(caminhoInspecao(request.resource.data.inspecaoId));
+  allow delete: if supervisorInspecta() && encerramentoValido(caminhoInspecao(resource.data.inspecaoId));
+}

@@ -13,6 +13,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Inspecta">
+        <activity android:name=".CriarChecklistActivity" android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".GerenciarChecklistsActivity" android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ExecutarChecklistActivity" android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".RevisarMaquinaActivity" android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".MenuOpeActivity" android:exported="false" />
         <activity android:name=".VisaoTurnoActivity" android:exported="false" />
         <activity

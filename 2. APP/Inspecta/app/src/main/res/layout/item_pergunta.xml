@@ -29,7 +29,6 @@
                 android:layout_alignParentStart="true"
                 android:layout_toStartOf="@+id/tvTagCritico"
                 android:layout_marginEnd="16dp"
-                android:text="Botão de emergência"
                 android:textStyle="bold"
                 android:textColor="#111111"
                 android:textSize="18sp" />
@@ -42,20 +41,11 @@
                 android:background="#FFEBEE"
                 android:paddingHorizontal="12dp"
                 android:paddingVertical="6dp"
-                android:text="Crítico"
+                android:text="@string/checklist_critico"
                 android:textColor="#B71C1C"
                 android:textSize="12sp"
                 android:textStyle="bold" />
         </RelativeLayout>
-
-        <TextView
-            android:id="@+id/tvDescricaoPergunta"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Ao acionar, a máquina para imediatamente?"
-            android:textColor="#555555"
-            android:textSize="16sp"
-            android:layout_marginBottom="20dp" />
 
         <RadioGroup
             android:id="@+id/rgResposta"
@@ -68,7 +58,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="56dp"
-                android:text="Conforme"
+                android:text="@string/inspecao_funcionando"
                 android:background="@drawable/bg_radio_button"
                 android:button="@null"
                 android:gravity="center"
@@ -81,7 +71,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="56dp"
-                android:text="Não conforme"
+                android:text="@string/inspecao_nao_funcionando"
                 android:background="@drawable/bg_radio_button"
                 android:button="@null"
                 android:gravity="center"

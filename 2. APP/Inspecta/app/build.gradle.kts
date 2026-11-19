@@ -5,14 +5,12 @@ plugins {
 
 android {
     namespace = "com.example.inspecta"
-    compileSdk {
-        version = release(37)
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.inspecta"
         minSdk = 33
-        targetSdk = 37
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
