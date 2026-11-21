@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/raizChecklist"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -15,6 +16,14 @@
         android:paddingHorizontal="24dp"
         android:background="#FFFFFF"
         android:elevation="4dp">
+        <ImageButton
+            android:id="@+id/btnVoltar"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginEnd="12dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/checklist_voltar"
+            android:src="@android:drawable/ic_menu_revert" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -26,7 +35,8 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:orientation="vertical"
         android:padding="24dp">
 
@@ -59,7 +69,10 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:background="@drawable/bg_search"
-            android:hint="Nome ou código da máquina"
+            android:hint="@string/checklist_busca_hint"
+            android:inputType="text"
+            android:textColor="#111111"
+            android:textColorHint="#666666"
             android:drawableEnd="@android:drawable/ic_menu_search"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
@@ -75,23 +88,33 @@
             android:layout_marginBottom="24dp">
 
             <Button
+                android:id="@+id/btnPublicados"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
-                android:text="Publicados · 3"
+                android:text="@string/checklist_publicados"
                 android:backgroundTint="#004D40"
                 android:textColor="#FFFFFF"
                 style="?android:attr/borderlessButtonStyle"/>
 
             <Button
+                android:id="@+id/btnRascunhos"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
-                android:text="Rascunhos · 0"
+                android:text="@string/checklist_rascunhos"
                 android:backgroundTint="@android:color/transparent"
                 android:textColor="#888888"
                 style="?android:attr/borderlessButtonStyle"/>
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvEstadoChecklists"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:accessibilityLiveRegion="polite"
+            android:text="@string/checklist_carregando"
+            android:textColor="#555555" />
 
         <!-- Lista de Formulários (RecyclerView) -->
         <androidx.recyclerview.widget.RecyclerView

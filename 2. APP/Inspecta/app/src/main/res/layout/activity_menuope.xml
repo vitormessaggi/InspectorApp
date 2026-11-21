@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/raizChecklist"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -50,20 +51,15 @@
             android:padding="20dp">
 
             <TextView
+                android:id="@+id/tvTotalDisponiveis"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="3 checklists disponíveis"
+                android:text="@string/checklist_carregando"
                 android:textColor="#FFFFFF"
                 android:textStyle="bold"
                 android:textSize="18sp"
                 android:layout_marginBottom="4dp" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Estamparia e logística • Unidade 01"
-                android:textColor="#B2DFDB"
-                android:textSize="14sp" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
@@ -73,7 +69,10 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:background="@drawable/bg_search"
-        android:hint="Buscar por nome ou código"
+        android:hint="@string/checklist_busca_hint"
+        android:inputType="text"
+        android:textColor="#111111"
+        android:textColorHint="#666666"
         android:drawableEnd="@android:drawable/ic_menu_search"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
@@ -97,19 +96,28 @@
             android:textSize="18sp" />
 
         <TextView
+            android:id="@+id/tvTotalMaquinas"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="3 máquinas"
             android:textColor="#00796B"
             android:textStyle="bold"
             android:textSize="14sp" />
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/tvEstadoChecklists"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:accessibilityLiveRegion="polite"
+        android:textColor="#555555"
+        android:visibility="gone" />
+
     <!-- Lista de Máquinas -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvMaquinas"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:clipToPadding="false"
         android:paddingBottom="16dp" />
 

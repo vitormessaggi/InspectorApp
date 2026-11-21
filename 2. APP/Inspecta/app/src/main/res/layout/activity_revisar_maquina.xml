@@ -1,49 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/raizChecklist"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#F8F9FA">
+    android:background="#F8F9FA"
+    android:orientation="vertical">
 
-    <!-- Toolbar -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="64dp"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingHorizontal="24dp"
         android:background="#FFFFFF"
-        android:elevation="4dp">
-        <ImageView
+        android:elevation="4dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp">
+
+        <ImageButton
             android:id="@+id/btnVoltar"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/checklist_voltar"
             android:src="@android:drawable/ic_menu_revert" />
-        <LinearLayout
+
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginStart="24dp">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Revisar máquina"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="#111111"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Ocorrência #CK-0611-042"
-                android:textSize="12sp"
-                android:textColor="#888888"/>
-        </LinearLayout>
+            android:layout_marginStart="16dp"
+            android:text="@string/inspecao_revisar"
+            android:textColor="#111111"
+            android:textSize="20sp"
+            android:textStyle="bold" />
     </LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:fillViewport="true">
 
         <LinearLayout
@@ -52,119 +45,127 @@
             android:orientation="vertical"
             android:padding="24dp">
 
-            <!-- Card de Alerta -->
-            <androidx.cardview.widget.CardView
+            <TextView
+                android:id="@+id/tvRevisaoEstado"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="12dp"
-                app:cardBackgroundColor="#FFEBEE"
-                app:cardElevation="0dp"
-                android:layout_marginBottom="24dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="20dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Inoperante • aguardando revisão"
-                        android:textColor="#C62828"
-                        android:textStyle="bold"
-                        android:layout_marginBottom="12dp"/>
-
-                    <TextView android:text="PH-07" android:textStyle="bold" android:textColor="#111111" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-                    <TextView android:text="Prensa hidráulica" android:textStyle="bold" android:textSize="18sp" android:textColor="#111111" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-                    <TextView android:text="Estamparia - Linha 02" android:textColor="#555555" android:layout_marginBottom="16dp" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-
-                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#EF9A9A" android:layout_marginBottom="12dp"/>
-                    <TextView android:text="Operação não permitida" android:textColor="#C62828" android:textStyle="bold" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- Título Decisão -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Sua decisão"
-                android:textStyle="bold"
-                android:textSize="20sp"
+                android:layout_marginBottom="16dp"
+                android:accessibilityLiveRegion="polite"
+                android:text="@string/inspecao_carregando"
                 android:textColor="#111111"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="12dp"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Justificativa para manter o status *"
-                android:textColor="#555555"
-                android:layout_marginBottom="8dp"/>
-
-            <EditText
-                android:id="@+id/etJustificativa"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minLines="3"
-                android:gravity="top|start"
-                android:text="Falha não corrigida. Aguardando manutenção."
-                android:background="@drawable/bg_search"
-                android:padding="16dp"
-                android:layout_marginBottom="16dp"/>
+                android:textStyle="bold" />
 
             <LinearLayout
+                android:id="@+id/detalhesRevisao"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#FFF9C4"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/bg_search"
                 android:orientation="vertical"
                 android:padding="16dp"
-                android:layout_marginBottom="24dp">
+                android:visibility="gone">
+
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:id="@+id/tvRevisaoMaquina"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Só libere após verificar a correção"
-                    android:textStyle="bold"
-                    android:textColor="#F57F17"
-                    android:layout_marginBottom="4dp"/>
+                    android:textColor="#111111"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:id="@+id/tvRevisaoRegistro"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Manter preserva o bloqueio. Retirar o status torna a máquina operante e notifica o funcionário."
-                    android:textColor="#F57F17"
-                    android:textSize="12sp"/>
+                    android:layout_marginTop="6dp"
+                    android:textColor="#555555" />
+
+                <TextView
+                    android:id="@+id/tvRevisaoFalhas"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:textColor="#B71C1C"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvRevisaoObservacao"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:textColor="#333333" />
             </LinearLayout>
 
-            <Button
-                android:id="@+id/btnManterInoperante"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:text="Manter inoperante"
-                android:textSize="16sp"
-                android:backgroundTint="#C62828"
-                android:textColor="#FFFFFF"
-                android:layout_marginBottom="12dp" />
-
-            <Button
-                android:id="@+id/btnLiberarMaquina"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:text="Retirar status e liberar..."
-                android:textSize="16sp"
-                android:backgroundTint="#E0F2F1"
-                android:textColor="#004D40"
-                style="?android:attr/borderlessButtonStyle" />
-
-            <TextView
+            <LinearLayout
+                android:id="@+id/formularioLiberacao"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Para liberar, você deverá confirmar a correção da falha na próxima etapa."
-                android:textAlignment="center"
-                android:textSize="12sp"
-                android:textColor="#888888"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="32dp"/>
+                android:orientation="vertical"
+                android:visibility="gone">
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:text="@string/inspecao_liberar_orientacao"
+                    android:textColor="#111111"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/etJustificativaLiberacao"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:background="@drawable/bg_search"
+                    android:gravity="top|start"
+                    android:hint="@string/inspecao_justificativa"
+                    android:inputType="textCapSentences|textMultiLine"
+                    android:maxLength="2000"
+                    android:minLines="3"
+                    android:padding="12dp"
+                    android:textColor="#111111"
+                    android:textColorHint="#666666" />
+
+                <CheckBox
+                    android:id="@+id/cbCorrecaoReteste"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:text="@string/inspecao_correcao"
+                    android:textColor="#111111" />
+
+                <CheckBox
+                    android:id="@+id/cbMaquinaSegura"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:text="@string/inspecao_segura"
+                    android:textColor="#111111" />
+
+                <Button
+                    android:id="@+id/btnLiberarMaquina"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="12dp"
+                    android:backgroundTint="#004D40"
+                    android:text="@string/inspecao_liberar"
+                    android:textColor="#FFFFFF" />
+
+                <Button
+                    android:id="@+id/btnManterInoperante"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:text="@string/inspecao_manter"
+                    android:textColor="#004D40" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvEstadoLiberacao"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:accessibilityLiveRegion="polite"
+                android:textColor="#555555" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
