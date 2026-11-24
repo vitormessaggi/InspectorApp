@@ -52,7 +52,10 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        findViewById(R.id.btnCadastro).setOnClickListener(v -> startActivity(new Intent(this, CadastroActivity.class)));
         firebaseAuth = FirebaseAuth.getInstance();
+        loginButton.setOnClickListener(view -> signIn());
+        forgotPassword.setOnClickListener(view -> sendPasswordReset());
         if (firebaseAuth.getCurrentUser() != null) {
             openScreenForCurrentUser();
             return;
@@ -93,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         String userId = firebaseAuth.getCurrentUser().getUid();
-        FirebaseFirestore.getInstance().collection("users").document(userId).get()
+        Perfil.buscar(userId)
                 .addOnCompleteListener(this, task -> {
                     setLoading(false);
                     if (!task.isSuccessful() || task.getResult() == null || !task.getResult().exists()) {
@@ -104,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     DocumentSnapshot profile = task.getResult();
-                    Object tagValue = profile.get("tag");
+                    Object tagValue = profile.contains("perfil") ? profile.get("perfil") : profile.get("tag");
                     String tag = tagValue == null ? "" : tagValue.toString().trim();
                     Class<?> destination;
                     if ("Operador".equalsIgnoreCase(tag)) {
@@ -112,8 +115,9 @@ public class MainActivity extends AppCompatActivity {
                     } else if ("Supervisor".equalsIgnoreCase(tag)) {
                         destination = VisaoTurnoActivity.class;
                     } else {
+                        firebaseAuth.signOut();
                         Toast.makeText(this,
-                                "Perfil sem uma tag válida. Use Operador ou Supervisor no cadastro do funcionário.",
+                                "Seu cadastro aguarda a definição do perfil pelo responsável.",
                                 Toast.LENGTH_LONG).show();
                         return;
                     }

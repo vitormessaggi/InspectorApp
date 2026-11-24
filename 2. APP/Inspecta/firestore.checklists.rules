@@ -1,19 +1,45 @@
-// Incorpore este trecho dentro de match /databases/{database}/documents.
-// Se o trecho anterior do Inspecta já estiver publicado, substitua-o por este.
-// Preserve as regras dos perfis e mantenha o campo users/{uid}.tag sob controle administrativo.
-// Regras mais amplas precisam excluir /checklists, /inspecoes e /bloqueiosMaquinas.
+rules_version = '2';
+service cloud.firestore {
+match /databases/{database}/documents {
 function perfilInspecta() {
-  return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+  let atual = /databases/$(database)/documents/usuarios/$(request.auth.uid);
+  return exists(atual) ? get(atual).data
+    : get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
 }
-
+function papelInspecta() {
+  let perfil = perfilInspecta();
+  return perfil.get('perfil', perfil.get('tag', ''));
+}
 function supervisorInspecta() {
-  return request.auth != null && perfilInspecta().tag is string
-    && perfilInspecta().tag.matches('(?i)^\\s*supervisor\\s*$');
+  return request.auth != null && papelInspecta().matches('(?i)^\\s*supervisor\\s*$');
+}
+function operadorInspecta() {
+  return request.auth != null && papelInspecta().matches('(?i)^\\s*operador\\s*$');
 }
 
-function operadorInspecta() {
-  return request.auth != null && perfilInspecta().tag is string
-    && perfilInspecta().tag.matches('(?i)^\\s*operador\\s*$');
+match /usuarios/{uid} {
+  allow get: if request.auth != null && request.auth.uid == uid;
+  allow create: if request.auth != null && request.auth.uid == uid
+    && !exists(/databases/$(database)/documents/users/$(uid))
+    && request.resource.data.keys().hasOnly(['nome', 'perfil'])
+    && request.resource.data.nome is string && request.resource.data.nome.trim().size() > 0
+    && request.resource.data.perfil == 'Pendente';
+}
+match /users/{uid} {
+  allow get: if request.auth != null && request.auth.uid == uid;
+}
+match /maquinas/{maquinaId} {
+  allow read: if supervisorInspecta() || operadorInspecta();
+  allow create: if supervisorInspecta()
+    && request.resource.data.keys().hasOnly(['codigo', 'nome', 'setor', 'tipo', 'checklistId'])
+    && request.resource.data.codigo is string
+    && request.resource.data.codigo.size() > 0 && request.resource.data.codigo.size() <= 80
+    && request.resource.data.nome is string && request.resource.data.nome.trim().size() > 0
+    && request.resource.data.setor is string && request.resource.data.setor.trim().size() > 0
+    && request.resource.data.tipo is string && request.resource.data.tipo.trim().size() > 0
+    && bloqueioInspecta(request.resource.data.codigo)
+      == /databases/$(database)/documents/bloqueiosMaquinas/$(maquinaId)
+    && get(/databases/$(database)/documents/checklists/$(request.resource.data.checklistId)).data.publicado == true;
 }
 
 function bloqueioInspecta(codigo) {
@@ -25,7 +51,7 @@ match /checklists/{checklistId} {
   function checklistValido() {
     let dados = request.resource.data;
     return dados.keys().hasOnly([
-        'nome', 'codigoMaquina', 'nomeMaquina', 'setor', 'itens',
+        'nome', 'tipo', 'codigoMaquina', 'nomeMaquina', 'setor', 'itens', 'indicesItens',
         'publicado', 'criadoPor', 'atualizadoEm', 'indicesCriticos', 'versaoAnteriorId'
       ])
       && dados.nome is string && dados.nome.size() > 0
@@ -33,8 +59,8 @@ match /checklists/{checklistId} {
       && dados.setor is string && dados.itens is list && dados.publicado is bool
       && dados.get('indicesCriticos', []) is list
       && dados.criadoPor is string && dados.atualizadoEm == request.time
-      && (!dados.publicado || (dados.codigoMaquina.size() > 0
-        && dados.nomeMaquina.size() > 0 && dados.itens.size() > 0));
+      && dados.get('tipo', '') is string
+      && (!dados.publicado || (dados.itens.size() > 0 && dados.tipo.trim().size() > 0));
   }
 
   function versaoArquivada(id) {
@@ -106,20 +132,35 @@ match /inspecoes/{inspecaoId} {
       : !existsAfter(caminho));
   }
 
+  function maquinaConfere(dados, checklist) {
+    let caminho = /databases/$(database)/documents/maquinas/$('maq-' + dados.codigoMaquina.trim().upper().replace('%', '%25').replace('/', '%2F'));
+    let maquina = exists(caminho) ? get(caminho).data : {
+      'checklistId': dados.checklistId, 'codigo': checklist.codigoMaquina,
+      'nome': checklist.nomeMaquina, 'setor': checklist.setor
+    };
+    return dados.codigoMaquina.size() > 0 && maquina.checklistId == dados.checklistId
+      && dados.codigoMaquina == maquina.codigo && dados.nomeMaquina == maquina.nome && dados.setor == maquina.setor;
+  }
+
   function inspecaoValida(dados) {
     let checklist = checklistEnviado(dados);
     let nome = perfilInspecta().get('nome', '');
     return dados.keys().hasOnly([
         'checklistId', 'checklistAtualizadoEm', 'checklistNome', 'codigoMaquina', 'nomeMaquina', 'setor',
         'operadorUid', 'operadorNome', 'observacao', 'falhas', 'falhasCriticas',
-        'perguntasCriticas', 'pendente', 'enviadaEm'
+        'perguntasCriticas', 'pendente', 'enviadaEm', 'respostas', 'itens'
       ])
       && checklist.publicado == true
       && dados.get('checklistAtualizadoEm', checklist.get('atualizadoEm', null)) == checklist.get('atualizadoEm', null)
-      && dados.checklistNome == checklist.nome && dados.codigoMaquina == checklist.codigoMaquina
-      && dados.nomeMaquina == checklist.nomeMaquina && dados.setor == checklist.setor
+      && dados.checklistNome == checklist.nome && maquinaConfere(dados, checklist)
       && dados.operadorUid == request.auth.uid && dados.operadorNome == (nome is string ? nome : '')
       && dados.observacao is string && dados.observacao.size() <= 2000
+      && (dados.falhas.size() == 0 || dados.observacao.trim().size() > 0)
+      && dados.itens == checklist.itens
+      && dados.respostas is list && dados.respostas.size() == checklist.itens.size()
+      && dados.respostas.hasOnly([1, 2])
+      && dados.respostas.removeAll([1]).size() == dados.falhas.size()
+      && (checklist.get('indicesItens', null) == null || checklist.indicesItens.hasAll(dados.falhas))
       && dados.falhas is list && dados.falhasCriticas is list && dados.perguntasCriticas is list
       && dados.enviadaEm == request.time
       && falhasConferem(dados, checklist) && bloqueioConfere(dados);
@@ -141,7 +182,7 @@ match /inspecoes/{inspecaoId} {
 
   allow get: if supervisorInspecta()
     || (operadorInspecta() && (resource == null || resource.data.operadorUid == request.auth.uid));
-  allow list: if supervisorInspecta();
+  allow list: if supervisorInspecta() || (operadorInspecta() && resource.data.operadorUid == request.auth.uid);
   allow create: if operadorInspecta() && inspecaoValida(request.resource.data);
   allow update: if supervisorInspecta() && liberacaoValida(request.resource.data);
 }
@@ -169,4 +210,7 @@ match /bloqueiosMaquinas/{maquinaId} {
   allow create: if operadorInspecta() && request.resource.data.keys().hasOnly(['inspecaoId'])
     && aberturaValida(caminhoInspecao(request.resource.data.inspecaoId));
   allow delete: if supervisorInspecta() && encerramentoValido(caminhoInspecao(resource.data.inspecaoId));
+}
+
+}
 }

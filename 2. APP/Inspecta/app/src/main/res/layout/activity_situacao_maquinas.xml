@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/raizSituacao" android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:background="#F8F9FA">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="64dp"
+        android:orientation="horizontal" android:gravity="center_vertical" android:paddingHorizontal="16dp" android:background="#FFFFFF" android:elevation="4dp">
+        <ImageButton android:id="@+id/voltarSituacao" android:layout_width="48dp" android:layout_height="48dp"
+            android:src="@android:drawable/ic_menu_revert" android:background="?attr/selectableItemBackgroundBorderless" android:contentDescription="Voltar ao menu" />
+        <TextView android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:layout_marginStart="16dp"
+            android:paddingVertical="12dp" android:text="Situação das máquinas" android:textSize="20sp" android:textStyle="bold" android:textColor="#111111" />
+    </LinearLayout>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="vertical" android:paddingHorizontal="24dp">
+        <TextView android:id="@+id/estadoSituacao" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="24dp" android:layout_marginBottom="16dp"
+            android:text="Carregando máquinas e inspeções…" android:textSize="14sp" android:textColor="#666666" android:accessibilityLiveRegion="polite" />
+        <Button android:id="@+id/filtroSetor" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp"
+            android:text="Todos os setores" android:backgroundTint="#FFFFFF" android:textColor="#00796B" android:drawableEnd="@android:drawable/arrow_down_float" />
+        <Button android:id="@+id/filtroSituacao" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp"
+            android:text="Todas as situações" android:backgroundTint="#FFFFFF" android:textColor="#00796B" android:drawableEnd="@android:drawable/arrow_down_float" />
+        <androidx.recyclerview.widget.RecyclerView android:id="@+id/listaSituacao" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:clipToPadding="false" android:paddingVertical="8dp" />
+        <Button android:id="@+id/modelosSituacao" android:layout_width="match_parent" android:layout_height="48dp" android:text="Modelos de checklist" android:backgroundTint="#FFFFFF" android:textColor="#00796B" style="?android:attr/borderlessButtonStyle" />
+        <Button android:id="@+id/voltarMenuSituacao" android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginBottom="12dp" android:text="Voltar ao menu" android:textColor="#FFFFFF" android:backgroundTint="#006064" />
+    </LinearLayout>
+</LinearLayout>

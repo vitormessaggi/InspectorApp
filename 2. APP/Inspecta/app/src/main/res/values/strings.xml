@@ -70,14 +70,14 @@
     <string name="inspecao_verificando_status">Verificando o status da máquina no Firebase…</string>
     <string name="inspecao_erro_status">Não foi possível verificar o status da máquina. Confira a conexão e as permissões.</string>
     <string name="inspecao_maquina_bloqueada">Máquina inoperante. Aguarde a liberação do Supervisor.</string>
-    <string name="inspecao_inoperante">Inoperante</string>
+    <string name="inspecao_inoperante">Bloqueada</string>
     <string name="inspecao_orientacao">Confira cada item e registre se está funcionando.</string>
     <string name="inspecao_falha_bloqueia">Falha crítica marcada. Ao enviar, a máquina ficará inoperante até a liberação do Supervisor.</string>
     <string name="inspecao_codigo_maquina">%1$s · %2$s</string>
     <string name="inspecao_progresso">%1$d de %2$d itens respondidos</string>
-    <string name="inspecao_funcionando">Funcionando</string>
-    <string name="inspecao_nao_funcionando">Não funcionando</string>
-    <string name="inspecao_observacao">Observação da inspeção (opcional)</string>
+    <string name="inspecao_funcionando">Conforme</string>
+    <string name="inspecao_nao_funcionando">Não conforme</string>
+    <string name="inspecao_observacao">Observação (obrigatória se houver não conformidade)</string>
     <string name="inspecao_enviar">Enviar inspeção</string>
     <string name="inspecao_enviar_falha">Enviar e sinalizar inoperante</string>
     <string name="inspecao_enviando">Enviando inspeção…</string>
@@ -121,4 +121,5 @@
         <item quantity="one">Mais %d item crítico na revisão</item>
         <item quantity="other">Mais %d itens críticos na revisão</item>
     </plurals>
+    <string name="tipo_obrigatorio">Informe o tipo de máquina</string>
 </resources>

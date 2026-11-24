@@ -30,6 +30,7 @@ public class CriarChecklistActivity extends AppCompatActivity {
 
     private final ChecklistStore store = new ChecklistStore();
     private EditText nome;
+    private EditText tipo;
     private EditText maquina;
     private EditText codigo;
     private EditText setor;
@@ -53,6 +54,7 @@ public class CriarChecklistActivity extends AppCompatActivity {
         ChecklistUi.aplicarInsets(findViewById(R.id.raizChecklist));
 
         nome = findViewById(R.id.etNomeChecklist);
+        tipo = findViewById(R.id.etTipoMaquina);
         maquina = findViewById(R.id.etNomeMaquina);
         codigo = findViewById(R.id.etCodigoMaquina);
         setor = findViewById(R.id.etSetorMaquina);
@@ -155,6 +157,7 @@ public class CriarChecklistActivity extends AppCompatActivity {
             Checklist checklist = Checklist.ler(tarefa.getResult());
             editandoPublicado = checklist.publicado;
             nome.setText(checklist.nome);
+            tipo.setText(checklist.tipo.isEmpty() ? checklist.nome : checklist.tipo);
             maquina.setText(checklist.maquina);
             codigo.setText(checklist.codigo);
             setor.setText(checklist.setor);
@@ -186,10 +189,10 @@ public class CriarChecklistActivity extends AppCompatActivity {
                 || !preenchido(nome, R.string.checklist_nome_obrigatorio)) {
             return;
         }
-        if (publicado && (!preenchido(maquina, R.string.checklist_maquina_obrigatoria)
-                || !preenchido(codigo, R.string.checklist_codigo_obrigatorio))) {
+        if (publicado && !preenchido(tipo, R.string.tipo_obrigatorio)) {
             return;
         }
+        if (publicado && !texto(codigo).isEmpty() && !preenchido(maquina, R.string.checklist_maquina_obrigatoria)) return;
         if (publicado && itens.getChildCount() == 0) {
             estado.setText(R.string.checklist_adicione_item);
             adicionar.requestFocus();
@@ -215,6 +218,7 @@ public class CriarChecklistActivity extends AppCompatActivity {
         String codigoMaquina = editandoPublicado ? codigo.getText().toString() : texto(codigo).toUpperCase(Locale.ROOT);
         Checklist checklist = new Checklist(checklistId, texto(nome), codigoMaquina,
                 texto(maquina), texto(setor), perguntas, publicado, versao);
+        checklist.tipo = texto(tipo);
         salvamento.mensagemSucesso = editandoPublicado ? R.string.checklist_alteracoes_salvas
                 : publicado ? R.string.checklist_publicado : R.string.checklist_rascunho_salvo;
         Boolean publicadoAntes = editandoExistente ? editandoPublicado : null;
@@ -290,6 +294,7 @@ public class CriarChecklistActivity extends AppCompatActivity {
 
     private void habilitarFormulario(boolean habilitado) {
         nome.setEnabled(habilitado);
+        tipo.setEnabled(habilitado);
         maquina.setEnabled(habilitado);
         codigo.setEnabled(habilitado && !editandoPublicado);
         setor.setEnabled(habilitado);

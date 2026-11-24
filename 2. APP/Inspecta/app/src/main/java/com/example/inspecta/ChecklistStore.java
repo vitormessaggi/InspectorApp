@@ -61,7 +61,9 @@ final class ChecklistStore {
                 ? referencia.collection("versoes").document() : null;
         List<Map<String, Object>> itens = new ArrayList<>();
         List<Integer> indicesCriticos = new ArrayList<>();
+        List<Integer> indicesItens = new ArrayList<>();
         for (int indice = 0; indice < checklist.itens.size(); indice++) {
+            indicesItens.add(indice);
             Checklist.Item item = checklist.itens.get(indice);
             Map<String, Object> dadosItem = new HashMap<>();
             dadosItem.put("pergunta", item.pergunta);
@@ -82,11 +84,13 @@ final class ChecklistStore {
             }
             Map<String, Object> dados = new HashMap<>();
             dados.put("nome", checklist.nome);
+            dados.put("tipo", checklist.tipo);
             dados.put("codigoMaquina", checklist.codigo);
             dados.put("nomeMaquina", checklist.maquina);
             dados.put("setor", checklist.setor);
             dados.put("itens", itens);
             dados.put("indicesCriticos", indicesCriticos);
+            dados.put("indicesItens", indicesItens);
             dados.put("publicado", checklist.publicado);
             dados.put("criadoPor", atual.exists() ? atual.get("criadoPor") : uid);
             dados.put("atualizadoEm", FieldValue.serverTimestamp());

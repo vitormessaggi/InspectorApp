@@ -130,5 +130,9 @@
         android:textColor="#00796B"
         style="?android:attr/borderlessButtonStyle" />
 
+<Button android:id="@+id/btnSituacaoMaquinas" android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="12dp" android:text="Situação de todas as máquinas" android:backgroundTint="#FFFFFF" android:textColor="#00796B" style="?android:attr/borderlessButtonStyle" />
+<Button android:id="@+id/btnCadastrarMaquina" android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="12dp" android:text="Cadastrar máquina" android:backgroundTint="#FFFFFF" android:textColor="#00796B" style="?android:attr/borderlessButtonStyle" />
+<Button android:id="@+id/btnIndicadores" android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="12dp" android:text="Conformidade por setor" android:backgroundTint="#FFFFFF" android:textColor="#00796B" style="?android:attr/borderlessButtonStyle" />
+<Button android:id="@+id/btnSairSupervisor" android:layout_width="match_parent" android:layout_height="56dp" android:layout_marginTop="12dp" android:text="Sair" android:backgroundTint="#FFFFFF" android:textColor="#00796B" style="?android:attr/borderlessButtonStyle" />
 </LinearLayout>
 </ScrollView>

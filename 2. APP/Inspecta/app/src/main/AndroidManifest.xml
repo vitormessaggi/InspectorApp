@@ -13,6 +13,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Inspecta">
+        <meta-data android:name="com.google.mlkit.vision.DEPENDENCIES" android:value="barcode_ui" />
+        <activity android:name=".SituacaoMaquinasActivity" android:exported="false" />
+        <activity android:name=".CadastroActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".CadastrarMaquinaActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".HistoricoActivity" android:exported="false" />
+        <activity android:name=".IndicadoresActivity" android:exported="false" />
         <activity android:name=".CriarChecklistActivity" android:exported="false"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".GerenciarChecklistsActivity" android:exported="false"

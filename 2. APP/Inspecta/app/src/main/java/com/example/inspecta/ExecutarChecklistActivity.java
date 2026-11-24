@@ -34,6 +34,7 @@ public class ExecutarChecklistActivity extends AppCompatActivity {
     private GravacaoInspecao gravacao;
     private Checklist checklist;
     private String checklistId;
+    static final String EXTRA_CODIGO = "codigoMaquina";
     private String inspecaoId;
     private int[] respostas;
     private Timestamp versaoRestaurada;
@@ -117,8 +118,16 @@ public class ExecutarChecklistActivity extends AppCompatActivity {
                     || !Objects.equals(versaoRestaurada, checklist.atualizadoEm)) {
                 respostas = new int[checklist.itens.size()];
             }
-            montarPerguntas();
-            observarBloqueio();
+            String codigo = getIntent().getStringExtra(EXTRA_CODIGO);
+            CatalogoStore.resolver(checklist, codigo).addOnCompleteListener(this, maquina -> {
+                if (!maquina.isSuccessful()) {
+                    estado.setText("Máquina indisponível. Volte e atualize a lista.");
+                    return;
+                }
+                checklist = maquina.getResult();
+                montarPerguntas();
+                observarBloqueio();
+            });
         });
     }
 
@@ -196,6 +205,11 @@ public class ExecutarChecklistActivity extends AppCompatActivity {
         FirebaseUser usuario = FirebaseAuth.getInstance().getCurrentUser();
         if (usuario == null) {
             mensagemEnvio.setText(R.string.inspecao_sessao_expirada);
+            return;
+        }
+        if (!ValidacaoInspecao.observacaoValida(respostas, observacao.getText().toString())) {
+            observacao.setError("Descreva a não conformidade antes de enviar.");
+            observacao.requestFocus();
             return;
         }
         enviouFalhaCritica = false;

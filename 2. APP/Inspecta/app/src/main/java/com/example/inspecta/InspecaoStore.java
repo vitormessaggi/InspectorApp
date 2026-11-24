@@ -100,7 +100,7 @@ final class InspecaoStore {
     Task<Void> enviar(String id, String uid, Checklist exibido, int[] respostas, String observacao) {
         DocumentReference registro = inspecoes.document(id);
         DocumentReference formulario = firestore.collection("checklists").document(exibido.id);
-        DocumentReference perfil = firestore.collection("users").document(uid);
+        DocumentReference perfil = firestore.collection("usuarios").document(uid);
 
         return firestore.runTransaction(transacao -> {
             DocumentSnapshot existente = transacao.get(registro);
@@ -116,12 +116,25 @@ final class InspecaoStore {
                     || !Objects.equals(checklist.atualizadoEm, exibido.atualizadoEm)) {
                 throw precondicao("Checklist alterado");
             }
+            DocumentSnapshot maquina = transacao.get(firestore.collection("maquinas").document(Inspecao.idMaquina(exibido.codigo)));
+            if (maquina.exists()) {
+                if (!checklist.id.equals(maquina.getString("checklistId"))) {
+                    throw precondicao("Modelo da máquina alterado");
+                }
+                checklist = checklist.paraMaquina(maquina.getString("codigo"), maquina.getString("nome"), maquina.getString("setor"));
+            } else if (!checklist.codigo.equals(exibido.codigo) || checklist.codigo.isEmpty()) {
+                throw precondicao("Máquina indisponível");
+            }
             DocumentReference bloqueio = bloqueios.document(Inspecao.idMaquina(checklist.codigo));
             if (transacao.get(bloqueio).exists()) {
                 throw new FirebaseFirestoreException("Máquina inoperante",
                         FirebaseFirestoreException.Code.ALREADY_EXISTS);
             }
-            String operador = Inspecao.texto(transacao.get(perfil).get("nome"));
+            DocumentSnapshot usuario = transacao.get(perfil);
+            if (!usuario.exists()) {
+                usuario = transacao.get(firestore.collection("users").document(uid));
+            }
+            String operador = Inspecao.texto(usuario.get("nome"));
             List<Integer> falhas = new ArrayList<>();
             List<Integer> criticas = new ArrayList<>();
             List<String> perguntasCriticas = new ArrayList<>();
@@ -143,6 +156,9 @@ final class InspecaoStore {
                 }
             }
 
+            if (!ValidacaoInspecao.observacaoValida(respostas, observacao)) {
+                throw precondicao("Observação obrigatória para não conformidade");
+            }
             boolean pendente = !criticas.isEmpty();
             Map<String, Object> dados = new HashMap<>();
             dados.put("checklistId", checklist.id);
@@ -156,6 +172,15 @@ final class InspecaoStore {
             dados.put("operadorUid", uid);
             dados.put("operadorNome", operador);
             dados.put("observacao", observacao);
+            List<Integer> respostasSalvas = new ArrayList<>();
+            List<Map<String, Object>> itensSalvos = new ArrayList<>();
+            for (int indice = 0; indice < respostas.length; indice++) {
+                respostasSalvas.add(respostas[indice]);
+                Checklist.Item item = checklist.itens.get(indice);
+                itensSalvos.add(Map.of("pergunta", item.pergunta, "critico", item.critico));
+            }
+            dados.put("respostas", respostasSalvas);
+            dados.put("itens", itensSalvos);
             dados.put("falhas", falhas);
             dados.put("falhasCriticas", criticas);
             dados.put("perguntasCriticas", perguntasCriticas);

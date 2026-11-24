@@ -22,7 +22,7 @@ final class ChecklistAdapter extends ListAdapter<Checklist, ChecklistAdapter.Car
         super(new DiffUtil.ItemCallback<Checklist>() {
             @Override
             public boolean areItemsTheSame(@NonNull Checklist antigo, @NonNull Checklist novo) {
-                return antigo.id.equals(novo.id);
+                return antigo.id.equals(novo.id) && antigo.codigo.equals(novo.codigo);
             }
 
             @Override

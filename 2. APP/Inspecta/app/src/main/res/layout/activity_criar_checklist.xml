@@ -75,11 +75,12 @@
                 android:paddingHorizontal="16dp"
                 android:layout_marginBottom="20dp" />
 
+            <EditText android:id="@+id/etTipoMaquina" android:layout_width="match_parent" android:layout_height="56dp" android:hint="Tipo de máquina (ex. Prensa hidráulica)" android:inputType="textCapSentences" android:maxLength="120" />
             <TextView
                 android:labelFor="@id/etNomeMaquina"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Máquina"
+                android:text="Máquina original (opcional para modelos novos)"
                 android:textColor="#555555"
                 android:layout_marginBottom="8dp"/>
             <EditText

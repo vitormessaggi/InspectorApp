@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.Map;
 
 final class Checklist {
+    String tipo = "";
     final String id;
     final String nome;
     final String codigo;
@@ -44,16 +45,18 @@ final class Checklist {
             }
         }
         Object data = documento.get("atualizadoEm");
-        return new Checklist(documento.getId(), texto(documento.get("nome")),
+        Checklist checklist = new Checklist(documento.getId(), texto(documento.get("nome")),
                 texto(documento.get("codigoMaquina")), texto(documento.get("nomeMaquina")),
                 texto(documento.get("setor")), itens, Boolean.TRUE.equals(documento.get("publicado")),
                 data instanceof Timestamp ? (Timestamp) data : null);
+        checklist.tipo = texto(documento.get("tipo"));
+        return checklist;
     }
 
     static Checklist paraInspecao(DocumentSnapshot documento) {
         Checklist checklist = ler(documento);
         Object dadosItens = documento.get("itens");
-        if (!checklist.publicado || checklist.codigo.trim().isEmpty() || checklist.itens.isEmpty()
+        if (!checklist.publicado || checklist.itens.isEmpty()
                 || !(dadosItens instanceof List<?>) || ((List<?>) dadosItens).size() != checklist.itens.size()) {
             return null;
         }
@@ -63,6 +66,12 @@ final class Checklist {
             }
         }
         return checklist;
+    }
+
+    Checklist paraMaquina(String codigo, String nome, String setor) {
+        Checklist copia = new Checklist(id, this.nome, codigo, nome, setor, itens, publicado, atualizadoEm);
+        copia.tipo = tipo;
+        return copia;
     }
 
     boolean corresponde(String busca) {

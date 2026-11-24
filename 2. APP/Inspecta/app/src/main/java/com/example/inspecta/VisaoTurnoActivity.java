@@ -39,6 +39,10 @@ public class VisaoTurnoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_visao_turno);
         ChecklistUi.aplicarInsets(findViewById(R.id.raizChecklist));
 
+        findViewById(R.id.btnSituacaoMaquinas).setOnClickListener(v -> startActivity(new Intent(this, SituacaoMaquinasActivity.class)));
+        findViewById(R.id.btnCadastrarMaquina).setOnClickListener(v -> startActivity(new Intent(this, CadastrarMaquinaActivity.class)));
+        findViewById(R.id.btnIndicadores).setOnClickListener(v -> startActivity(new Intent(this, IndicadoresActivity.class)));
+        findViewById(R.id.btnSairSupervisor).setOnClickListener(v -> Perfil.sair(this));
         totalFormularios = findViewById(R.id.tvTotalFormularios);
         totalInspecoes = findViewById(R.id.tvTotalInspecoes);
         totalInoperantes = findViewById(R.id.tvTotalInoperantes);
