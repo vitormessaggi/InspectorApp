@@ -94,6 +94,16 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:textColor="#333333" />
+
+                <Button
+                    android:id="@+id/btnVerFotoInspecao"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/inspecao_foto_ver"
+                    android:backgroundTint="#004D40"
+                    android:textColor="#FFFFFF"
+                    android:visibility="gone" />
             </LinearLayout>
 
             <LinearLayout

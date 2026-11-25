@@ -122,4 +122,15 @@
         <item quantity="other">Mais %d itens críticos na revisão</item>
     </plurals>
     <string name="tipo_obrigatorio">Informe o tipo de máquina</string>
+    <string name="inspecao_foto_anexar">Anexar foto</string>
+    <string name="inspecao_foto_refazer">Tirar outra foto</string>
+    <string name="inspecao_foto_anexada">Foto anexada.</string>
+    <string name="inspecao_foto_obrigatoria">Tire uma foto para enviar o checklist.</string>
+    <string name="inspecao_foto_sem_configuracao">O envio de fotos está indisponível. Configure o Cloudinary para enviar o checklist.</string>
+    <string name="inspecao_foto_erro_camera">Não foi possível abrir a câmera deste dispositivo.</string>
+    <string name="inspecao_foto_ver">Ver foto</string>
+    <string name="inspecao_foto_erro_abrir">Não foi possível abrir a foto neste dispositivo.</string>
+    <string name="inspecao_foto_erro_leitura">Não foi possível salvar a foto. Tire outra foto.</string>
+    <string name="inspecao_foto_invalida">A foto não pôde ser preparada para o envio. Tire outra foto.</string>
+    <string name="inspecao_foto_erro_envio">Não foi possível enviar a foto. Verifique a conexão e tente novamente.</string>
 </resources>

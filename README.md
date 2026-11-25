@@ -17,7 +17,16 @@ Vitor Messaggi é o integrante identificado no repositório. Os demais nomes do 
 - Leitura de QR pelo Google Code Scanner. O conteúdo do QR deve ser o código exato da máquina cadastrada.
 - Percentual de itens conformes por setor e mês.
 
-O Cloudinary foi adiado por decisão do responsável pelo projeto.
+## Fotos de não conformidades
+
+O operador deve tirar uma foto com a câmera para enviar cada inspeção. O aplicativo envia a imagem em JPEG e reduz fotos maiores que 10 MB antes do upload. A foto fica disponível no histórico e na revisão do supervisor. O Cloudinary entrega a imagem por um link acessível a quem o possui.
+
+Crie um preset de upload *Unsigned* para imagens no Cloudinary, com os formatos permitidos e a opção de impedir IDs públicos definidos pelo cliente. Informe o *Cloud name* e o nome do preset nas propriedades do Gradle:
+
+    cloudinaryCloudName=nome-da-conta
+    cloudinaryUploadPreset=nome-do-preset
+
+Para configurar apenas no seu computador, use o arquivo gradle.properties no diretório pessoal do Gradle. Sem esses valores, o aplicativo bloqueia o envio de inspeções. Publique as regras atualizadas de firestore.checklists.rules antes de usar esta versão com o Firebase do projeto. O requisito vale para novos registros e as inspeções antigas continuam disponíveis no histórico.
 
 ## Abrir e compilar
 

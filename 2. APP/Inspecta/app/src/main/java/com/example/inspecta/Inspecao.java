@@ -17,6 +17,7 @@ final class Inspecao {
     final String setor;
     final String operador;
     final String observacao;
+    final String fotoUrl;
     final List<String> perguntasCriticas;
     final boolean pendente;
     final Timestamp enviadaEm;
@@ -29,6 +30,7 @@ final class Inspecao {
         setor = texto(documento.get("setor"));
         operador = texto(documento.get("operadorNome"));
         observacao = texto(documento.get("observacao"));
+        fotoUrl = texto(documento.get("fotoUrl"));
         pendente = Boolean.TRUE.equals(documento.get("pendente"));
         enviadaEm = documento.getTimestamp("enviadaEm");
         perguntasCriticas = new ArrayList<>();

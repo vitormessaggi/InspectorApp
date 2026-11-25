@@ -101,6 +101,10 @@ public class RevisarMaquinaActivity extends AppCompatActivity {
         TextView observacao = findViewById(R.id.tvRevisaoObservacao);
         observacao.setVisibility(inspecao.observacao.isEmpty() ? View.GONE : View.VISIBLE);
         observacao.setText(inspecao.observacao);
+        View foto = findViewById(R.id.btnVerFotoInspecao);
+        String fotoUrl = inspecao.fotoUrl;
+        foto.setVisibility(CloudinaryFoto.urlValida(fotoUrl) ? View.VISIBLE : View.GONE);
+        foto.setOnClickListener(view -> CloudinaryFoto.abrir(this, fotoUrl));
         TextView falhas = findViewById(R.id.tvRevisaoFalhas);
         StringBuilder detalhes = new StringBuilder();
         for (String pergunta : inspecao.perguntasCriticas) {

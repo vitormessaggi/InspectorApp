@@ -121,8 +121,32 @@
         android:clipToPadding="false"
         android:paddingBottom="16dp" />
 
-<LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-<Button android:id="@+id/btnQr" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Ler QR" android:drawableStart="@android:drawable/ic_menu_camera" />
-<Button android:id="@+id/btnHistoricoOperador" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Histórico" />
-<Button android:id="@+id/btnSairOperador" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:text="Sair" />
-</LinearLayout></LinearLayout>
+    <Button
+        android:id="@+id/btnQr"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Ler QR"
+        android:backgroundTint="#FFFFFF"
+        android:textColor="#00796B"
+        style="?android:attr/borderlessButtonStyle" />
+
+    <Button
+        android:id="@+id/btnHistoricoOperador"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="12dp"
+        android:text="Histórico"
+        android:backgroundTint="#FFFFFF"
+        android:textColor="#00796B"
+        style="?android:attr/borderlessButtonStyle" />
+
+    <Button
+        android:id="@+id/btnSairOperador"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginTop="12dp"
+        android:text="Sair"
+        android:backgroundTint="#FFFFFF"
+        android:textColor="#00796B"
+        style="?android:attr/borderlessButtonStyle" />
+</LinearLayout>

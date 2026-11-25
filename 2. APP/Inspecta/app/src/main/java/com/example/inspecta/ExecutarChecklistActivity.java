@@ -1,5 +1,11 @@
 package com.example.inspecta;
 
+import android.content.ActivityNotFoundException;
+import android.content.ClipData;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -8,21 +14,43 @@ import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class ExecutarChecklistActivity extends AppCompatActivity {
     static final String EXTRA_CHECKLIST_ID = "com.example.inspecta.extra.CHECKLIST_ID";
 
+    private static final Executor ENVIOS_FOTO = Executors.newSingleThreadExecutor();
+
+    private final ActivityResultLauncher<Uri> capturarFoto = registerForActivityResult(
+            new ActivityResultContracts.TakePicture() {
+                @NonNull
+                @Override
+                public Intent createIntent(@NonNull Context contexto, @NonNull Uri destino) {
+                    Intent camera = super.createIntent(contexto, destino);
+                    camera.setClipData(ClipData.newRawUri("foto da inspeção", destino));
+                    camera.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    return camera;
+                }
+            }, this::receberFoto);
     private final ChecklistStore checklists = new ChecklistStore();
     private final InspecaoStore inspecoes = new InspecaoStore();
     private LinearLayout perguntas;
@@ -31,6 +59,11 @@ public class ExecutarChecklistActivity extends AppCompatActivity {
     private TextView mensagemEnvio;
     private EditText observacao;
     private Button enviar;
+    private Button anexo;
+    private TextView estadoFoto;
+    private File pastaFotos;
+    private File foto;
+    private File capturaPendente;
     private GravacaoInspecao gravacao;
     private Checklist checklist;
     private String checklistId;
@@ -56,11 +89,16 @@ public class ExecutarChecklistActivity extends AppCompatActivity {
             return;
         }
         inspecaoId = savedInstanceState == null ? inspecoes.novoId() : savedInstanceState.getString("inspecaoId");
+        pastaFotos = new File(getCacheDir(), "fotos-inspecao");
         if (savedInstanceState != null) {
             respostas = savedInstanceState.getIntArray("respostas");
             versaoRestaurada = savedInstanceState.getParcelable("versaoChecklist", Timestamp.class);
             concluida = savedInstanceState.getBoolean("concluida");
             enviouFalhaCritica = savedInstanceState.getBoolean("enviouFalhaCritica");
+            String nomeFoto = savedInstanceState.getString("arquivoFoto");
+            String nomePendente = savedInstanceState.getString("capturaPendente");
+            if (nomeFoto != null) foto = new File(pastaFotos, nomeFoto);
+            if (nomePendente != null) capturaPendente = new File(pastaFotos, nomePendente);
         }
 
         gravacao = new ViewModelProvider(this).get(GravacaoInspecao.class);
@@ -70,6 +108,9 @@ public class ExecutarChecklistActivity extends AppCompatActivity {
         mensagemEnvio = findViewById(R.id.tvInspecaoEnvio);
         observacao = findViewById(R.id.etDescricaoFalha);
         enviar = findViewById(R.id.btnConcluir);
+        anexo = findViewById(R.id.btnAnexarFoto);
+        estadoFoto = findViewById(R.id.tvEstadoFoto);
+        anexo.setOnClickListener(view -> abrirCamera());
         findViewById(R.id.btnVoltar).setOnClickListener(view -> finish());
         enviar.setOnClickListener(view -> enviarInspecao());
     }
@@ -101,6 +142,8 @@ public class ExecutarChecklistActivity extends AppCompatActivity {
         outState.putParcelable("versaoChecklist", checklist == null ? versaoRestaurada : checklist.atualizadoEm);
         outState.putBoolean("concluida", concluida);
         outState.putBoolean("enviouFalhaCritica", enviouFalhaCritica);
+        if (foto != null) outState.putString("arquivoFoto", foto.getName());
+        if (capturaPendente != null) outState.putString("capturaPendente", capturaPendente.getName());
     }
 
     private void carregarChecklist() {
@@ -155,6 +198,8 @@ public class ExecutarChecklistActivity extends AppCompatActivity {
             perguntas.addView(linha);
         }
         observacao.setVisibility(View.VISIBLE);
+        anexo.setVisibility(View.VISIBLE);
+        estadoFoto.setVisibility(View.VISIBLE);
     }
 
     private void observarBloqueio() {
@@ -192,8 +237,15 @@ public class ExecutarChecklistActivity extends AppCompatActivity {
         enviar.setText(critica ? R.string.inspecao_enviar_falha : R.string.inspecao_enviar);
 
         boolean habilitado = statusConfirmado && !bloqueada && gravacao.tarefa == null;
-        enviar.setEnabled(habilitado && respondidas == respostas.length);
+        boolean configurada = CloudinaryFoto.configurada();
+        boolean temFoto = foto != null && foto.length() > 0;
+        boolean cameraFechada = capturaPendente == null;
+        enviar.setEnabled(habilitado && configurada && cameraFechada && temFoto && respondidas == respostas.length);
         observacao.setEnabled(habilitado);
+        anexo.setEnabled(habilitado && configurada && cameraFechada);
+        anexo.setText(temFoto ? R.string.inspecao_foto_refazer : R.string.inspecao_foto_anexar);
+        estadoFoto.setText(!configurada ? R.string.inspecao_foto_sem_configuracao
+                : temFoto ? R.string.inspecao_foto_anexada : R.string.inspecao_foto_obrigatoria);
         for (int i = 0; i < perguntas.getChildCount(); i++) {
             View linha = perguntas.getChildAt(i);
             linha.findViewById(R.id.rbConforme).setEnabled(habilitado);
@@ -201,7 +253,79 @@ public class ExecutarChecklistActivity extends AppCompatActivity {
         }
     }
 
+    private void abrirCamera() {
+        try {
+            if (!pastaFotos.isDirectory() && !pastaFotos.mkdirs()) {
+                throw new IOException("Pasta de fotos indisponível");
+            }
+            capturaPendente = File.createTempFile("inspecao-", ".jpg", pastaFotos);
+            Uri destino = FileProvider.getUriForFile(this, getPackageName() + ".fotos", capturaPendente);
+            capturarFoto.launch(destino);
+            atualizarFormulario();
+        } catch (ActivityNotFoundException | SecurityException erro) {
+            descartarCaptura();
+            mensagemEnvio.setText(R.string.inspecao_foto_erro_camera);
+        } catch (IOException erro) {
+            descartarCaptura();
+            mensagemEnvio.setText(R.string.inspecao_foto_erro_leitura);
+        }
+    }
+
+    private void receberFoto(boolean capturou) {
+        File arquivo = capturaPendente;
+        capturaPendente = null;
+        if (arquivo == null) return;
+
+        if (capturou) {
+            BitmapFactory.Options dimensoes = new BitmapFactory.Options();
+            dimensoes.inJustDecodeBounds = true;
+            BitmapFactory.decodeFile(arquivo.getPath(), dimensoes);
+            if (dimensoes.outWidth > 0 && dimensoes.outHeight > 0) {
+                removerFoto();
+                foto = arquivo;
+                mensagemEnvio.setText("");
+                atualizarFormulario();
+                return;
+            }
+            mensagemEnvio.setText(R.string.inspecao_foto_erro_leitura);
+        }
+        arquivo.delete();
+        atualizarFormulario();
+    }
+
+    private void descartarCaptura() {
+        if (capturaPendente != null) capturaPendente.delete();
+        capturaPendente = null;
+    }
+
+    private void removerFoto() {
+        if (foto != null) foto.delete();
+        foto = null;
+        gravacao.fotoUrl = null;
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (isFinishing() && gravacao != null) {
+            descartarCaptura();
+            if (gravacao.tarefa == null) {
+                removerFoto();
+            } else if (foto != null) {
+                File arquivo = foto;
+                gravacao.tarefa.addOnCompleteListener(tarefa -> arquivo.delete());
+            }
+        }
+        super.onDestroy();
+    }
+
     private void enviarInspecao() {
+        if (foto == null || foto.length() == 0) {
+            atualizarFormulario();
+            mensagemEnvio.setText(R.string.inspecao_foto_obrigatoria);
+            return;
+        }
+        if (!enviar.isEnabled()) return;
+
         FirebaseUser usuario = FirebaseAuth.getInstance().getCurrentUser();
         if (usuario == null) {
             mensagemEnvio.setText(R.string.inspecao_sessao_expirada);
@@ -216,8 +340,21 @@ public class ExecutarChecklistActivity extends AppCompatActivity {
         for (int i = 0; i < respostas.length; i++) {
             enviouFalhaCritica |= respostas[i] == Inspecao.NAO_FUNCIONANDO && checklist.itens.get(i).critico;
         }
-        gravacao.tarefa = inspecoes.enviar(inspecaoId, usuario.getUid(), checklist, respostas.clone(),
-                observacao.getText().toString().trim());
+        Checklist formulario = checklist;
+        int[] respostasEnviadas = respostas.clone();
+        String descricao = observacao.getText().toString().trim();
+        String id = inspecaoId;
+        String uid = usuario.getUid();
+        InspecaoStore store = inspecoes;
+        GravacaoInspecao envio = gravacao;
+        File arquivo = foto;
+        Task<String> upload = envio.fotoUrl == null
+                ? Tasks.call(ENVIOS_FOTO, () -> CloudinaryFoto.enviar(arquivo))
+                : Tasks.forResult(envio.fotoUrl);
+        envio.tarefa = upload.onSuccessTask(url -> {
+            envio.fotoUrl = url;
+            return store.enviar(id, uid, formulario, respostasEnviadas, descricao, url);
+        });
         acompanharEnvio();
     }
 
@@ -227,19 +364,24 @@ public class ExecutarChecklistActivity extends AppCompatActivity {
         gravacao.tarefa.addOnCompleteListener(this, tarefa -> {
             gravacao.tarefa = null;
             if (tarefa.isSuccessful()) {
+                removerFoto();
                 concluida = true;
                 mostrarRegistroEnviado();
                 return;
             }
             atualizarFormulario();
             int mensagem = R.string.inspecao_erro_envio;
-            if (tarefa.getException() instanceof FirebaseFirestoreException) {
+            if (tarefa.getException() instanceof CloudinaryFoto.FotoInvalida) {
+                mensagem = R.string.inspecao_foto_invalida;
+            } else if (tarefa.getException() instanceof FirebaseFirestoreException) {
                 FirebaseFirestoreException.Code codigo = ((FirebaseFirestoreException) tarefa.getException()).getCode();
                 if (codigo == FirebaseFirestoreException.Code.ALREADY_EXISTS) {
                     mensagem = R.string.inspecao_maquina_bloqueada;
                 } else if (codigo == FirebaseFirestoreException.Code.FAILED_PRECONDITION) {
                     mensagem = R.string.inspecao_formulario_alterado;
                 }
+            } else if (gravacao.fotoUrl == null) {
+                mensagem = R.string.inspecao_foto_erro_envio;
             }
             mensagemEnvio.setText(mensagem);
         });
@@ -250,6 +392,7 @@ public class ExecutarChecklistActivity extends AppCompatActivity {
             return;
         }
         enviar.setEnabled(false);
+        anexo.setEnabled(false);
         observacao.setEnabled(false);
         for (int i = 0; i < perguntas.getChildCount(); i++) {
             View linha = perguntas.getChildAt(i);

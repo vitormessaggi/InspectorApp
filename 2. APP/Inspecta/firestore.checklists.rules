@@ -148,7 +148,7 @@ match /inspecoes/{inspecaoId} {
     return dados.keys().hasOnly([
         'checklistId', 'checklistAtualizadoEm', 'checklistNome', 'codigoMaquina', 'nomeMaquina', 'setor',
         'operadorUid', 'operadorNome', 'observacao', 'falhas', 'falhasCriticas',
-        'perguntasCriticas', 'pendente', 'enviadaEm', 'respostas', 'itens'
+        'perguntasCriticas', 'pendente', 'enviadaEm', 'respostas', 'itens', 'fotoUrl'
       ])
       && checklist.publicado == true
       && dados.get('checklistAtualizadoEm', checklist.get('atualizadoEm', null)) == checklist.get('atualizadoEm', null)
@@ -162,6 +162,8 @@ match /inspecoes/{inspecaoId} {
       && dados.respostas.removeAll([1]).size() == dados.falhas.size()
       && (checklist.get('indicesItens', null) == null || checklist.indicesItens.hasAll(dados.falhas))
       && dados.falhas is list && dados.falhasCriticas is list && dados.perguntasCriticas is list
+      && dados.fotoUrl is string && dados.fotoUrl.size() <= 2048
+      && dados.fotoUrl.matches('https://res[.]cloudinary[.]com/[A-Za-z0-9_-]+/image/upload/[A-Za-z0-9_./%~-]+')
       && dados.enviadaEm == request.time
       && falhasConferem(dados, checklist) && bloqueioConfere(dados);
   }
