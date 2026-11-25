@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -13,7 +16,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Inspecta">
-        <meta-data android:name="com.google.mlkit.vision.DEPENDENCIES" android:value="barcode_ui" />
+        <activity
+            android:name="com.journeyapps.barcodescanner.CaptureActivity"
+            android:exported="false"
+            android:screenOrientation="fullSensor"
+            tools:replace="android:screenOrientation" />
         <provider
             android:name=".FotoInspecaoProvider"
             android:authorities="${applicationId}.fotos"
@@ -24,6 +31,7 @@
         <activity android:name=".SituacaoMaquinasActivity" android:exported="false" />
         <activity android:name=".CadastroActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".CadastrarMaquinaActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".QrMaquinaActivity" android:exported="false" />
         <activity android:name=".HistoricoActivity" android:exported="false" />
         <activity android:name=".IndicadoresActivity" android:exported="false" />
         <activity android:name=".CriarChecklistActivity" android:exported="false"

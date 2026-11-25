@@ -1,14 +1,26 @@
 package com.example.inspecta;
 
+import android.Manifest;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanIntentResult;
+import com.journeyapps.barcodescanner.ScanOptions;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,6 +30,13 @@ import java.util.Locale;
 import java.util.Set;
 
 public class MenuOpeActivity extends AppCompatActivity {
+    private final ActivityResultLauncher<ScanOptions> leitorQr =
+            registerForActivityResult(new ScanContract(), this::receberQr);
+    private final ActivityResultLauncher<String> permissaoCamera =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), autorizada -> {
+                if (autorizada) abrirLeitor();
+                else Toast.makeText(this, R.string.camera_permissao_necessaria, Toast.LENGTH_LONG).show();
+            });
     private final CatalogoStore store = new CatalogoStore();
     private final InspecaoStore inspecoes = new InspecaoStore();
     private List<Checklist> publicados = Collections.emptyList();
@@ -26,6 +45,9 @@ public class MenuOpeActivity extends AppCompatActivity {
     private TextView totalDisponiveis;
     private TextView totalMaquinas;
     private TextView estado;
+    private Button botaoQr;
+    private boolean lendoQr;
+    private String codigoLido;
     private boolean carregado;
     private boolean falhou;
 
@@ -40,21 +62,18 @@ public class MenuOpeActivity extends AppCompatActivity {
         totalMaquinas = findViewById(R.id.tvTotalMaquinas);
         estado = findViewById(R.id.tvEstadoChecklists);
         RecyclerView lista = findViewById(R.id.rvMaquinas);
-        adapter = new ChecklistAdapter(checklist -> {
-            Intent intent = new Intent(this, ExecutarChecklistActivity.class);
-            if (!checklist.publicado) {
-                android.widget.Toast.makeText(this, "O supervisor precisa publicar um modelo para esta máquina.", android.widget.Toast.LENGTH_LONG).show();
-                return;
-            }
-            intent.putExtra(ExecutarChecklistActivity.EXTRA_CHECKLIST_ID, checklist.id);
-            intent.putExtra(ExecutarChecklistActivity.EXTRA_CODIGO, checklist.codigo);
-            startActivity(intent);
-        });
+        adapter = new ChecklistAdapter(this::abrirInspecao);
         lista.setLayoutManager(new LinearLayoutManager(this));
         lista.setAdapter(adapter);
         ChecklistUi.observarBusca(busca, this::atualizarLista);
         findViewById(R.id.btnSairOperador).setOnClickListener(v -> Perfil.sair(this));
-        findViewById(R.id.btnQr).setOnClickListener(v -> lerQr());
+        if (savedInstanceState != null) {
+            lendoQr = savedInstanceState.getBoolean("lendoQr");
+            codigoLido = savedInstanceState.getString("codigoLido");
+        }
+        botaoQr = findViewById(R.id.btnQr);
+        botaoQr.setOnClickListener(v -> lerQr());
+        atualizarBotaoQr();
         findViewById(R.id.btnHistoricoOperador).setOnClickListener(v -> startActivity(new Intent(this, HistoricoActivity.class)));
 
     }
@@ -70,11 +89,22 @@ public class MenuOpeActivity extends AppCompatActivity {
             carregado = true;
             falhou = false;
             atualizarLista();
+            atualizarBotaoQr();
+            concluirLeituraQr();
         }, () -> {
             publicados = Collections.emptyList();
             falhou = true;
             atualizarLista();
+            atualizarBotaoQr();
+            concluirLeituraQr();
         });
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("lendoQr", lendoQr);
+        outState.putString("codigoLido", codigoLido);
     }
 
     @Override
@@ -84,28 +114,76 @@ public class MenuOpeActivity extends AppCompatActivity {
                 getIntent().getStringExtra(MainActivity.EXTRA_NOME_USUARIO));
     }
 
+    private void abrirInspecao(Checklist checklist) {
+        if (!checklist.publicado) {
+            Toast.makeText(this, R.string.checklist_maquina_sem_modelo, Toast.LENGTH_LONG).show();
+            return;
+        }
+        Intent intent = new Intent(this, ExecutarChecklistActivity.class);
+        intent.putExtra(ExecutarChecklistActivity.EXTRA_CHECKLIST_ID, checklist.id);
+        intent.putExtra(ExecutarChecklistActivity.EXTRA_CODIGO, checklist.codigo);
+        startActivity(intent);
+    }
+
+    private void atualizarBotaoQr() {
+        botaoQr.setEnabled(carregado && !falhou && !lendoQr && codigoLido == null);
+    }
+
     private void lerQr() {
-        com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions options =
-                new com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions.Builder()
-                        .setBarcodeFormats(com.google.mlkit.vision.barcode.common.Barcode.FORMAT_QR_CODE)
-                        .enableAutoZoom().build();
-        com.google.mlkit.vision.codescanner.GmsBarcodeScanning.getClient(this, options).startScan()
-                .addOnSuccessListener(this, barcode -> {
-                    String codigo = barcode.getRawValue();
-                    if (codigo == null) return;
-                    for (Checklist checklist : publicados) {
-                        if (checklist.codigo.equalsIgnoreCase(codigo.trim())) {
-                            Intent intent = new Intent(this, ExecutarChecklistActivity.class);
-                            intent.putExtra(ExecutarChecklistActivity.EXTRA_CHECKLIST_ID, checklist.id);
-                            intent.putExtra(ExecutarChecklistActivity.EXTRA_CODIGO, checklist.codigo);
-                            if (checklist.publicado) startActivity(intent);
-                            else android.widget.Toast.makeText(this, "Modelo indisponível para esta máquina.", android.widget.Toast.LENGTH_LONG).show();
-                            return;
-                        }
-                    }
-                    android.widget.Toast.makeText(this, "QR sem máquina cadastrada. Use o código exato da máquina.", android.widget.Toast.LENGTH_LONG).show();
-                }).addOnFailureListener(this, erro -> android.widget.Toast.makeText(this,
-                        "Não foi possível abrir o leitor. Confira a conexão e o Google Play Services.", android.widget.Toast.LENGTH_LONG).show());
+        if (!botaoQr.isEnabled()) return;
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            abrirLeitor();
+        } else {
+            permissaoCamera.launch(Manifest.permission.CAMERA);
+        }
+    }
+
+    private void abrirLeitor() {
+        if (lendoQr) return;
+        ScanOptions opcoes = new ScanOptions();
+        opcoes.setDesiredBarcodeFormats(ScanOptions.QR_CODE);
+        opcoes.setPrompt(getString(R.string.checklist_qr_enquadrar));
+        opcoes.setBeepEnabled(false);
+        opcoes.setOrientationLocked(false);
+        lendoQr = true;
+        atualizarBotaoQr();
+        try {
+            leitorQr.launch(opcoes);
+        } catch (ActivityNotFoundException | SecurityException erro) {
+            lendoQr = false;
+            atualizarBotaoQr();
+            Toast.makeText(this, R.string.checklist_qr_erro_leitor, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void receberQr(ScanIntentResult resultado) {
+        lendoQr = false;
+        codigoLido = resultado.getContents();
+        atualizarBotaoQr();
+        concluirLeituraQr();
+    }
+
+    private void concluirLeituraQr() {
+        if (codigoLido == null || (!carregado && !falhou)) return;
+
+        String codigo = codigoLido.trim();
+        codigoLido = null;
+        atualizarBotaoQr();
+        if (falhou) {
+            Toast.makeText(this, R.string.checklist_erro_carregar, Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        if (!codigo.isEmpty()) {
+            String idMaquina = Inspecao.idMaquina(codigo);
+            for (Checklist checklist : publicados) {
+                if (Inspecao.idMaquina(checklist.codigo).equals(idMaquina)) {
+                    abrirInspecao(checklist);
+                    return;
+                }
+            }
+        }
+        Toast.makeText(this, R.string.checklist_qr_desconhecido, Toast.LENGTH_LONG).show();
     }
 
     private void atualizarLista() {
