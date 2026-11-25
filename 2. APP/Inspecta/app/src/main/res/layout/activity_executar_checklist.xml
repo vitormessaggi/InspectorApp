@@ -102,6 +102,25 @@
                 android:layout_marginBottom="16dp"
                 android:visibility="gone" />
 
+            <TextView
+                android:id="@+id/tvEstadoFoto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:accessibilityLiveRegion="polite"
+                android:text="@string/inspecao_foto_obrigatoria"
+                android:textColor="#555555"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/btnAnexarFoto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="@string/inspecao_foto_anexar"
+                android:backgroundTint="#004D40"
+                android:textColor="#FFFFFF"
+                android:visibility="gone" />
+
             <Button
                 android:id="@+id/btnConcluir"
                 android:layout_width="match_parent"

@@ -80,7 +80,12 @@ public class HistoricoActivity extends AppCompatActivity {
                     .append("\n").append(ChecklistUi.dataInspecao(doc.getTimestamp("liberadaEm")))
                     .append("\nSupervisor ").append(doc.getString("liberadoPor"));
         }
-        new AlertDialog.Builder(this).setTitle(doc.getString("checklistNome"))
-                .setMessage(texto).setPositiveButton("Fechar", null).show();
+        AlertDialog.Builder detalhes = new AlertDialog.Builder(this).setTitle(doc.getString("checklistNome"))
+                .setMessage(texto).setPositiveButton("Fechar", null);
+        String fotoUrl = Inspecao.texto(doc.get("fotoUrl"));
+        if (CloudinaryFoto.urlValida(fotoUrl)) {
+            detalhes.setNeutralButton(R.string.inspecao_foto_ver, (dialogo, botao) -> CloudinaryFoto.abrir(this, fotoUrl));
+        }
+        detalhes.show();
     }
 }

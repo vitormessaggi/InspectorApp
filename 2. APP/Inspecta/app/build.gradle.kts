@@ -3,7 +3,16 @@ plugins {
     alias(libs.plugins.google.services)
 }
 
+val cloudinaryCloudName = providers.gradleProperty("cloudinaryCloudName").orElse("").get()
+val cloudinaryUploadPreset = providers.gradleProperty("cloudinaryUploadPreset").orElse("").get()
+require(listOf(cloudinaryCloudName, cloudinaryUploadPreset).all { it.matches(Regex("[A-Za-z0-9_-]*")) }) {
+    "O nome da conta e o preset do Cloudinary devem conter apenas letras, números, hífens ou sublinhados."
+}
+
 android {
+    buildFeatures {
+        buildConfig = true
+    }
     namespace = "com.example.inspecta"
     compileSdk = 36
 
@@ -13,6 +22,8 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
+        buildConfigField("String", "CLOUDINARY_CLOUD_NAME", "\"$cloudinaryCloudName\"")
+        buildConfigField("String", "CLOUDINARY_UPLOAD_PRESET", "\"$cloudinaryUploadPreset\"")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

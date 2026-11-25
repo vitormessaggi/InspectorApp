@@ -97,7 +97,7 @@ final class InspecaoStore {
         });
     }
 
-    Task<Void> enviar(String id, String uid, Checklist exibido, int[] respostas, String observacao) {
+    Task<Void> enviar(String id, String uid, Checklist exibido, int[] respostas, String observacao, String fotoUrl) {
         DocumentReference registro = inspecoes.document(id);
         DocumentReference formulario = firestore.collection("checklists").document(exibido.id);
         DocumentReference perfil = firestore.collection("usuarios").document(uid);
@@ -172,6 +172,10 @@ final class InspecaoStore {
             dados.put("operadorUid", uid);
             dados.put("operadorNome", operador);
             dados.put("observacao", observacao);
+            if (!CloudinaryFoto.urlValida(fotoUrl)) {
+                throw precondicao("Foto obrigatória para esta inspeção");
+            }
+            dados.put("fotoUrl", fotoUrl);
             List<Integer> respostasSalvas = new ArrayList<>();
             List<Map<String, Object>> itensSalvos = new ArrayList<>();
             for (int indice = 0; indice < respostas.length; indice++) {
