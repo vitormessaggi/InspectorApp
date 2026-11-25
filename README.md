@@ -55,8 +55,8 @@ A publicação das novas regras ainda precisa ser confirmada no ambiente da equi
 
 | Perfil | Situação |
 |---|---|
-| Operador | operador@teste.com | teste123
-| Supervisor | supervisor | teste123
+| Operador | operador@teste.com | teste123 |
+| Supervisor | supervisor@teste.com | teste123 |
 
 As contas reais e as respectivas credenciais de teste devem ser definidas pela equipe antes da apresentação.
 
