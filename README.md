@@ -23,8 +23,8 @@ O operador deve tirar uma foto com a câmera para enviar cada inspeção. O apli
 
 Crie um preset de upload *Unsigned* para imagens no Cloudinary, com os formatos permitidos e a opção de impedir IDs públicos definidos pelo cliente. Informe o *Cloud name* e o nome do preset nas propriedades do Gradle:
 
-    cloudinaryCloudName=nome-da-conta
-    cloudinaryUploadPreset=nome-do-preset
+    cloudinaryCloudName=kjmc7znj
+    cloudinaryUploadPreset=nuuvem
 
 Para configurar apenas no seu computador, use o arquivo gradle.properties no diretório pessoal do Gradle. Sem esses valores, o aplicativo bloqueia o envio de inspeções. Publique as regras atualizadas de firestore.checklists.rules antes de usar esta versão com o Firebase do projeto. O requisito vale para novos registros e as inspeções antigas continuam disponíveis no histórico.
 
@@ -55,8 +55,8 @@ A publicação das novas regras ainda precisa ser confirmada no ambiente da equi
 
 | Perfil | Situação |
 |---|---|
-| Operador | E-mail de teste ainda não informado |
-| Supervisor | E-mail de teste ainda não informado |
+| Operador | operador@teste.com | teste123
+| Supervisor | supervisor | teste123
 
 As contas reais e as respectivas credenciais de teste devem ser definidas pela equipe antes da apresentação.
 
