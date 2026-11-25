@@ -1,9 +1,11 @@
 package com.example.inspecta;
 
+import android.Manifest;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,6 +21,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -39,6 +42,12 @@ public class ExecutarChecklistActivity extends AppCompatActivity {
     static final String EXTRA_CHECKLIST_ID = "com.example.inspecta.extra.CHECKLIST_ID";
 
     private static final Executor ENVIOS_FOTO = Executors.newSingleThreadExecutor();
+
+    private final ActivityResultLauncher<String> permissaoCamera =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), autorizada -> {
+                if (autorizada) abrirCamera();
+                else this.mensagemEnvio.setText(R.string.camera_permissao_necessaria);
+            });
 
     private final ActivityResultLauncher<Uri> capturarFoto = registerForActivityResult(
             new ActivityResultContracts.TakePicture() {
@@ -110,7 +119,13 @@ public class ExecutarChecklistActivity extends AppCompatActivity {
         enviar = findViewById(R.id.btnConcluir);
         anexo = findViewById(R.id.btnAnexarFoto);
         estadoFoto = findViewById(R.id.tvEstadoFoto);
-        anexo.setOnClickListener(view -> abrirCamera());
+        anexo.setOnClickListener(view -> {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                abrirCamera();
+            } else {
+                permissaoCamera.launch(Manifest.permission.CAMERA);
+            }
+        });
         findViewById(R.id.btnVoltar).setOnClickListener(view -> finish());
         enviar.setOnClickListener(view -> enviarInspecao());
     }
@@ -254,6 +269,7 @@ public class ExecutarChecklistActivity extends AppCompatActivity {
     }
 
     private void abrirCamera() {
+        if (isFinishing() || concluida || capturaPendente != null || gravacao.tarefa != null) return;
         try {
             if (!pastaFotos.isDirectory() && !pastaFotos.mkdirs()) {
                 throw new IOException("Pasta de fotos indisponível");

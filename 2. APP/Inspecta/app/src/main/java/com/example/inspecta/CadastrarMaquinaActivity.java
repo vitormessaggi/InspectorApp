@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class CadastrarMaquinaActivity extends AppCompatActivity {
     public static class Gravacao extends androidx.lifecycle.ViewModel {
-        com.google.android.gms.tasks.Task<Void> tarefa;
+        com.google.android.gms.tasks.Task<String> tarefa;
     }
     private Gravacao gravacao;
     private List<Checklist> modelos = new ArrayList<>();
@@ -83,11 +83,11 @@ public class CadastrarMaquinaActivity extends AppCompatActivity {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         com.google.firebase.firestore.DocumentReference ref = db.collection("maquinas").document(Inspecao.idMaquina(codigoTexto));
         salvar.setEnabled(false);
-        gravacao.tarefa = db.<Void>runTransaction(transaction -> {
+        gravacao.tarefa = db.runTransaction(transaction -> {
             if (transaction.get(ref).exists()) throw new FirebaseFirestoreException("Código já cadastrado", FirebaseFirestoreException.Code.ALREADY_EXISTS);
             transaction.set(ref, Map.of("codigo", codigoTexto, "nome", nomeTexto, "setor", setorTexto,
                     "tipo", escolhido.tipo.isEmpty() ? escolhido.nome : escolhido.tipo, "checklistId", escolhido.id));
-            return null;
+            return codigoTexto;
         });
         acompanhar();
     }
@@ -97,8 +97,12 @@ public class CadastrarMaquinaActivity extends AppCompatActivity {
         gravacao.tarefa.addOnCompleteListener(this, task -> {
             gravacao.tarefa = null;
             salvar.setEnabled(true);
-            if (task.isSuccessful()) finish();
-            else mensagem.setText("Não foi possível salvar. Confira a conexão, a permissão e se o código já está cadastrado.");
+            if (task.isSuccessful()) {
+                startActivity(QrMaquinaActivity.paraMaquina(this, task.getResult()));
+                finish();
+            } else {
+                mensagem.setText("Não foi possível salvar. Confira a conexão, a permissão e se o código já está cadastrado.");
+            }
         });
     }
 }

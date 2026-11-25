@@ -14,7 +14,7 @@ Vitor Messaggi é o integrante identificado no repositório. Os demais nomes do 
 - Painel diário com Liberada, Bloqueada e Sem inspeção, atualizado em tempo real e com filtro por situação.
 - Histórico com operador, data, respostas, observação e justificativa de liberação.
 - Cadastro e login por e-mail e senha, sessão persistente, recuperação de senha e saída.
-- Leitura de QR pelo Google Code Scanner. O conteúdo do QR deve ser o código exato da máquina cadastrada.
+- Leitura de QR pela câmera com ZXing. O conteúdo do QR deve ser o código exato da máquina cadastrada.
 - Percentual de itens conformes por setor e mês.
 
 ## Fotos de não conformidades
@@ -32,7 +32,7 @@ Para configurar apenas no seu computador, use o arquivo gradle.properties no dir
 
 1. Abra a pasta `2. APP/Inspecta` no Android Studio.
 2. Use JDK 25, conforme `gradle/gradle-daemon-jvm.properties`, e instale o SDK Android 36.
-3. Sincronize o Gradle. O leitor de QR requer Google Play Services e pode baixar o módulo na primeira utilização.
+3. Sincronize o Gradle. No aparelho, autorize a câmera ao abrir o leitor de QR ou ao anexar uma foto.
 4. Execute em Android 13 ou superior, conforme `minSdk 33`.
 
 Na pasta do aplicativo, os comandos são `gradlew.bat :app:assembleDebug` e `gradlew.bat :app:testDebugUnitTest`.
@@ -105,5 +105,5 @@ Cada história deve ter uma issue com responsável no GitHub Projects, nas colun
 
 ## Referências técnicas
 
-- [Google Code Scanner](https://developers.google.com/ml-kit/vision/barcode-scanning/code-scanner)
+- [ZXing Android Embedded](https://github.com/journeyapps/zxing-android-embedded)
 - [Condições das regras do Firestore](https://firebase.google.com/docs/firestore/security/rules-conditions)

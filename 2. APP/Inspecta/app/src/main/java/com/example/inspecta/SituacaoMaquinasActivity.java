@@ -130,7 +130,12 @@ public class SituacaoMaquinasActivity extends AppCompatActivity {
                 List<String> opcoes = new ArrayList<>();
                 opcoes.add("Histórico da máquina");
                 if (bloqueio != null) opcoes.add("Revisar bloqueio");
+                opcoes.add(getString(R.string.maquina_qr_salvar));
                 new AlertDialog.Builder(this).setTitle(maquina.codigo).setItems(opcoes.toArray(new String[0]), (d, i) -> {
+                    if (i == opcoes.size() - 1) {
+                        startActivity(QrMaquinaActivity.paraMaquina(this, maquina.codigo));
+                        return;
+                    }
                     Intent intent = new Intent(this, i == 0 ? HistoricoActivity.class : RevisarMaquinaActivity.class);
                     intent.putExtra("codigoMaquina", maquina.codigo);
                     intent.putExtra("supervisor", true);
